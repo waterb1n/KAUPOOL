@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "725989876595",
+    "firebase_url": "https://kaupool.firebaseio.com",
+    "project_id": "kaupool",
+    "storage_bucket": "kaupool.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725989876595:android:62ed9f2690af0b68cbdb06",
+        "android_client_info": {
+          "package_name": "com.water.kaupool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "725989876595-iajpbrtvmk9q1vd1dsdkp0eti1bev3k9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyHVvlnIPU6cr-Fnrr4yRyE0l0M7s_G4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "725989876595-iajpbrtvmk9q1vd1dsdkp0eti1bev3k9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

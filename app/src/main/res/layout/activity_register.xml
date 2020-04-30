@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:conext=".RegisterActivity">
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/JoinName"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="이름"
+            android:textSize="15dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="checkName"
+            android:text="확인" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/JoinId"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="아이디"
+            android:onClick="checkId"
+            android:textSize="15dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="확인" />
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/JoinPass"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="비밀번호"
+        android:textSize="15dp" />
+
+    <EditText
+        android:id="@+id/JoinPhone"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="연락처"
+        android:textSize="15dp" />
+
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="성별:"
+            android:textSize="15dp" />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:hint="남"
+                android:textSize="15dp" />
+
+            <RadioButton
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:hint="여"
+                android:textSize="15dp" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="20dp"
+        android:onClick="RegisterToLogin"
+        android:text="회원가입 완료" />
+
+</LinearLayout>

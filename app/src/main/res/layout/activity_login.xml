@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://shcemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/logo" />
+
+    <EditText
+        android:id="@+id/loginId"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:hint="User ID"
+        android:textSize="15dp" />
+
+    <EditText
+        android:id="@+id/loginPasswd"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textSize="15dp" />
+
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorBlue"
+        android:onClick="goto_Main"
+        android:text="Login"
+        android:textColor="@color/colorWhite" />
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:background="@color/colorBlue"
+        android:onClick="goto_Register"
+        android:text="Register"
+        android:textColor="@color/colorWhite" />
+
+</LinearLayout>
