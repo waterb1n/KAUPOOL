@@ -19,15 +19,17 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:hint="User ID"
+        android:text="waterb1n"
         android:textSize="15dp" />
 
     <EditText
-        android:id="@+id/loginPasswd"
+        android:id="@+id/loginPw"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Password"
+        android:text="143lee"
         android:inputType="textPassword"
         android:textSize="15dp" />
 
