@@ -14,6 +14,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import java.util.*
+import kotlinx.android.synthetic.main.fragment1.chatBtn
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 class FragmentB : Fragment() {

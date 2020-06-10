@@ -21,7 +21,7 @@ class RegisterActivity : AppCompatActivity() {
 
     fun checkId(view: View?) { // ID 확인
         val user_id = JoinId!!.text.toString()
-        val id_query: Query = LoginActivity.Companion.db_member!!.orderByChild("member_id").equalTo(user_id)
+        val id_query: Query = LoginActivity.db_member!!.orderByChild("member_id").equalTo(user_id)
         id_query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value == null) { //사용가능

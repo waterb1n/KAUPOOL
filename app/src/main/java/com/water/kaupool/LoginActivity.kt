@@ -44,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
                     if (user_pw == m?.member_pw) {
                         val loginIntent = Intent(this@LoginActivity, MainActivity::class.java)
                         loginName = m?.member_name
+                        loginPhone = m?.member_phone
                         //loginId = m?.member_id
                         Toast.makeText(this@LoginActivity, "환영합니다.", Toast.LENGTH_SHORT).show()
                         startActivity(loginIntent)
@@ -65,6 +66,7 @@ class LoginActivity : AppCompatActivity() {
         var db_member: DatabaseReference? = null
         var db_manager: DatabaseReference? = null
         var loginName: String? = null
+        var loginPhone: String? = null
         //var loginId: String? = null
     }
 }

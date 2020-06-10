@@ -7,9 +7,11 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.location.*
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,31 +26,37 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import com.skt.Tmap.TMapData
+import com.skt.Tmap.*
 import com.skt.Tmap.TMapData.ConvertGPSToAddressListenerCallback
-import com.skt.Tmap.TMapGpsManager
+import com.skt.Tmap.TMapData.FindPathDataListenerCallback
 import com.skt.Tmap.TMapGpsManager.onLocationChangedCallback
-import com.skt.Tmap.TMapPoint
-import com.skt.Tmap.TMapView
 import com.water.kaupool.FragmentB.Companion.manage_list
 import com.water.kaupool.LoginActivity.Companion.db_manager
 import com.water.kaupool.LoginActivity.Companion.loginName
+import com.water.kaupool.LoginActivity.Companion.loginPhone
 import java.io.IOException
+import java.lang.Math.pow
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sqrt
 
 /**
  * https://robotluv1226.blog.me/220843350043
+ * https://m.blog.naver.com/dkanwk2/220790562790
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressListenerCallback {
     private val m_tmapPoint = ArrayList<TMapPoint>()
     private val mArrayMarkerID = ArrayList<String>()
-    //private val m_mapPoint = ArrayList<MapPoint>()
 
+    private val mMarkerID = 0
     var myTag: String? = null
     var time_required = 0
     var distance = 0
+    var mylat = 0.0
+    var mylon = 0.0
     var lat1 = 0.0
     var lat2 = 0.0
     var lon1 = 0.0
@@ -63,13 +71,17 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
     var total_date: String? = null
     var total_time: String? = null
     var locationManager: LocationManager? = null
+    var location: Location? = null
     var framelayout: FrameLayout? = null
     var info_box: LinearLayout? = null
     var address1: EditText? = null
     var address2: EditText? = null
     var info_time: TextView? = null
     var info_distance: TextView? = null
-    var search: Button? = null
+    var searchBtn: Button? = null
+    var chatBtn: Button? = null
+    var callBtn: Button? = null
+    var locationBtn: Button? = null
     var choiceBtn: ToggleButton? = null
     var register: Button? = null
     private val mContext: Context? = null
@@ -118,31 +130,24 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
                 val point1 = TMapPoint(lat1, lon1)
                 val point2 = TMapPoint(lat2, lon2)
 
-                val passList = ArrayList<TMapPoint>()
-                //startLocationService()
-
-                passList.add(TMapPoint(latitude, longitude))
-                passList.add(TMapPoint(37.557176, 126.864279))
-
-                tmapdata!!.findMultiPointPathData(point1, point2, passList, 0
-                ) { tMapPolyLine ->
+                tmapdata!!.findPathData(point1, point2, FindPathDataListenerCallback { tMapPolyLine ->
                     tmapview!!.addTMapPath(tMapPolyLine)
-
                     val latSpan = Math.abs(lat1 - lat2)
                     val lonSpan = Math.abs(lon1 - lon2)
+                    tmapview!!.zoomToSpan(latSpan * 1.5, lonSpan * 1.5)
 
-                    tmapview!!.zoomToSpan(latSpan, lonSpan)
-
-                    distance = tMapPolyLine.distance.toInt()
-                    time_required = (tMapPolyLine.distance / 1000).toInt()
+                    val x = ((cos(lat1) * 6400 * 2 * 3.14 / 360) * abs(lon1 - lon2))
+                    val y = (111 * abs(lat1 - lat2))
+                    val distance = (sqrt(x * x + y * y) * 1.3).toInt()
+                    val time_required = (distance / 0.54).toInt()
 
                     Thread(Runnable {
                         activity!!.runOnUiThread {
                             info_distance!!.text = distance.toString() + "km"
                             info_time!!.text = time_required.toString() + "분"
                         }
-                    }) //.start()
-                }
+                    }).start()
+                });
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -159,28 +164,27 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
     fun init() {
         myTag = tag
         (activity as MainActivity?)!!.fragment = myTag
-        //(activity as MainActivity?)!!.fragment = tag
         address1 = activity!!.findViewById<View>(R.id.departure) as EditText
         address2 = activity!!.findViewById<View>(R.id.destination) as EditText
-        search = activity!!.findViewById<View>(R.id.searchBtn) as Button
+        searchBtn = activity!!.findViewById<View>(R.id.searchBtn) as Button
         choiceBtn = activity!!.findViewById<View>(R.id.choiceBtn) as ToggleButton
         register = activity!!.findViewById<View>(R.id.register) as Button
+        chatBtn = activity!!.findViewById<View>(R.id.chatBtn) as Button
+        callBtn = activity!!.findViewById<View>(R.id.callBtn) as Button
         info_box = activity!!.findViewById<View>(R.id.info_box) as LinearLayout
         info_time = activity!!.findViewById<View>(R.id.info_time) as TextView
         info_distance = activity!!.findViewById<View>(R.id.info_distance) as TextView
-        val datePicker = activity!!.findViewById<View>(R.id.datepicker) as Button
-        val timePicker = activity!!.findViewById<View>(R.id.timepicker) as Button
+        var datePicker = activity!!.findViewById<View>(R.id.datepicker) as Button
+        var timePicker = activity!!.findViewById<View>(R.id.timepicker) as Button
 
         val myDateSetListener = OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             datePicker.text = String.format("%d년 %d월 %d일", year, monthOfYear + 1, dayOfMonth)
             total_date = String.format("%d%02d%02d", year, monthOfYear + 1, dayOfMonth)
-            //Toast.makeText(getActivity(), total_date, Toast.LENGTH_SHORT).show();
         }
 
         val myTimeSetListener = OnTimeSetListener { view, hourOfDay, minute ->
             timePicker.text = String.format("%d시 %d분", hourOfDay, minute)
             total_time = String.format("%02d%02d", hourOfDay, minute)
-            //Toast.makeText(getActivity(), total_time, Toast.LENGTH_SHORT).show();
         }
 
         datePicker.setOnClickListener {
@@ -214,7 +218,17 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
                 address2!!.setText("한국항공대학교")
             }
         }
-        search!!.setOnClickListener {
+
+        chatBtn!!.setOnClickListener {
+            (activity as MainActivity?)?.getViewPager()?.currentItem = 3
+        }
+
+        callBtn!!.setOnClickListener {
+            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + loginPhone))
+            startActivity(intent)
+        }
+
+        searchBtn!!.setOnClickListener {
             info_box!!.visibility = View.VISIBLE
             searchAddress()
 
@@ -222,41 +236,46 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
             tmapview!!.setCenterPoint((lon1 + lon2) / 2, (lat1 + lat2) / 2, true)
             val point1 = TMapPoint(lat1, lon1)
             val point2 = TMapPoint(lat2, lon2)
-            val passList = ArrayList<TMapPoint>()
 
-            tmapdata!!.findMultiPointPathData(point1, point2, passList, 0
-            ) { tMapPolyLine ->
+            tmapdata!!.findPathData(point1, point2, FindPathDataListenerCallback { tMapPolyLine ->
                 tmapview!!.addTMapPath(tMapPolyLine)
                 val latSpan = Math.abs(lat1 - lat2)
                 val lonSpan = Math.abs(lon1 - lon2)
-                tmapview!!.zoomToSpan(latSpan, lonSpan)
+                tmapview!!.zoomToSpan(latSpan * 1.5, lonSpan * 1.5)
 
-                distance = tMapPolyLine.distance.toInt()
-                time_required = (tMapPolyLine.distance / 1000).toInt()
+                val x = ((cos(lat1) * 6400 * 2 * 3.14 / 360) * abs(lon1 - lon2))
+                val y = (111 * abs(lat1 - lat2))
+                val distance = (sqrt(x * x + y * y) * 1.3).toInt()
+                val time_required = (distance / 0.54).toInt()
+
                 Thread(Runnable {
                     activity!!.runOnUiThread {
                         info_distance!!.text = distance.toString() + "km"
                         info_time!!.text = time_required.toString() + "분"
                     }
-                }) //.start()
-            }
-
-
-            register!!.setOnClickListener(View.OnClickListener {
-                val man_query: Query = db_manager?.orderByChild("date")!!.equalTo(total_date)
-                man_query.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        val date = initTime()
-                        val man = manager(date, total_time, loginName, "", true, address1?.getText().toString(), address2?.getText().toString(), 0)
-                        db_manager?.child(date)?.setValue(man)
-                        (activity as MainActivity?)?.getViewPager()?.setCurrentItem(1)
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {}
-                })
-            })
+                }).start()
+            });
         }
+
+
+        register!!.setOnClickListener(View.OnClickListener {
+            val man_query: Query = db_manager?.orderByChild("date")!!.equalTo(total_date)
+            man_query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val date = initTime()
+                    //if(date!=null && total_time!=null)
+                    //else Toast.makeText("날짜와 시간을 입력해주세요.")
+                    val man = manager(date, total_time, loginName, loginPhone, "", true,
+                            address1?.getText().toString(), address2?.getText().toString(), 0)
+                    db_manager?.child(date)?.setValue(man)
+                    (activity as MainActivity?)?.getViewPager()?.setCurrentItem(1)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {}
+            })
+        });
     }
+
 
     fun initMap() {
         tmapdata = TMapData()
@@ -264,11 +283,10 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
             tmapview = TMapView(activity)
         }
         tmapview!!.setHttpsMode(true)
-        //tmapview = new TMapView(getActivity());
         tmapview!!.setSKTMapApiKey(ApiKey) // api 키 설정
         tmapview!!.setLanguage(TMapView.LANGUAGE_KOREAN)
-        tmapview!!.setIconVisibility(true)
-        tmapview!!.zoomLevel = 10 // 7~19
+        //tmapview!!.setIconVisibility(true)
+        tmapview!!.zoomLevel = 12 // 7~19
         tmapview!!.mapType = TMapView.MAPTYPE_STANDARD // 지도 타입 - 일반지도
         tmapview!!.setCompassMode(false) // 단말의 방향에 따라 움직이는 나침반 모드
         tmapview!!.setTrackingMode(true) // 화면중심을 단말의 현재위치로 이동
@@ -284,17 +302,20 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
     private fun LocationPermission() {
         // ACCESS_FINE_LOCATION: NETWORK_PROVIDER, GPS_PROVIDER
         // ACCESS_COARSE_LOCATION: NETWORK_PROVIDER
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             //권한 거절
             //최초 권한 요청인지, user 재요청인지
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) &&
                     ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 // 사용자가 승인 거절을 누른 경우 or 아직 요청하지 않은 경우
                 // 권한 재요청
-                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 100)
+                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION), 100)
             } else {
-                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 100)
+                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION), 100)
             }
         } else {
             /// 권한 승인된 상태
@@ -304,15 +325,22 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
 
     private fun startLocationService() {
         locationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val minTime: Long = 10
-        val minDistance = 1f
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        val minTime: Long = 10 // update time
+        val minDistance = 1f // update distance
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(activity, "Don't have permissions.", Toast.LENGTH_LONG).show()
             return
         }
         locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, mLocationListener)
         locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, mLocationListener)
+        location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+        mylat = location!!.latitude
+        mylon = location!!.longitude
+
+        Toast.makeText(activity, "현재 위도: " + mylat + "현재 경도: " + mylon, Toast.LENGTH_LONG).show()
     }
 
     private fun stopLocationService() {
@@ -363,10 +391,8 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
      * MapView
      * https://blog.naver.com/ajh794/221018636934
      */
-    fun searchAddress() {
+    fun searchAddress(addr1: String?, addr2: String?) {
         val gc = Geocoder(activity, Locale.KOREA)
-        val addr1 = address1!!.text.toString()
-        val addr2 = address2!!.text.toString()
         try {
             val addrList1: List<Address>? = gc.getFromLocationName(addr1, 5)
             val addrList2: List<Address>? = gc.getFromLocationName(addr2, 5)
@@ -381,8 +407,10 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
         }
     }
 
-    fun searchAddress(addr1: String?, addr2: String?) {
+    fun searchAddress() {
         val gc = Geocoder(activity, Locale.KOREA)
+        val addr1 = address1!!.text.toString()
+        val addr2 = address2!!.text.toString()
         try {
             val addrList1: List<Address>? = gc.getFromLocationName(addr1, 5)
             val addrList2: List<Address>? = gc.getFromLocationName(addr2, 5)

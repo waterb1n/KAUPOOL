@@ -20,14 +20,11 @@ import com.google.android.material.tabs.TabLayout
  */
 class MainActivity : AppCompatActivity(),
         FragmentA.OnFragmentInteractionListener, FragmentB.OnFragmentInteractionListener,
-        FragmentC.OnFragmentInteractionListener {
-    // frag구현 후 리스너 계속 업데이트 해주기
+        FragmentC.OnFragmentInteractionListener, FragmentD.OnFragmentInteractionListener {
 
     var tabLayout: TabLayout? = null
     var pager: ViewPager? = null
     var fragment: String? = null
-    var latitude = 0.0
-    var longitude = 0.0
     var manager: LocationManager? = null
 
     /*fun getViewPager(): ViewPager? {
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity(),
                 0 -> "등록"
                 1 -> "목록"
                 2 -> "이력"
-                3 -> "설정"
+                3 -> "채팅"
                 else -> ""
             }
         }

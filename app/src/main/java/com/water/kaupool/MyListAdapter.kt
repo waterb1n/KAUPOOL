@@ -1,18 +1,29 @@
 package com.water.kaupool
 
+import androidx.appcompat.app.AppCompatActivity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import java.util.*
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+
 
 import com.water.kaupool.FragmentB.Companion.manage_list
 import com.water.kaupool.LoginActivity.Companion.db_manager
 import com.water.kaupool.LoginActivity.Companion.loginName
+import java.util.*
+
 
 /**
  * http://blog.naver.com/kittoboy/110133423266
@@ -86,6 +97,9 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
 
             if (tmpBitmap == tmpBitmap1) {
                 Btn.setImageResource(R.drawable.exit)
+
+                showNoti();
+
                 var ischeck = false
                 val newMan: manager? = manage_list?.get(position)
                 val previous_num = newMan?.num
@@ -117,6 +131,7 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
                     newMan.user = new_str
                     db_manager?.child(f_date)?.setValue(newMan)
                 }
+
             } else {
                 //Btn.setImageResource(R.drawable.button_in);
                 val newMan: manager? = manage_list?.get(position)
@@ -148,6 +163,58 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
         }
         return convertView
     }
+
+    /**
+     * https://codechacha.com/ko/notifications-in-android/
+     * https://developer.android.com/training/notify-user/build-notification?hl=ko
+     */
+
+    private fun createNotificationChannel(context: Context, importance: Int, showBadge: Boolean,
+                                          name: String, description: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "${context.packageName}-$name"
+            val channel = NotificationChannel(channelId, name, importance)
+            channel.description = description
+            channel.setShowBadge(showBadge)
+
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun showNoti() {
+        //clearExistingNotifications(NOTIFICATION_ID)
+        //clearExistingNotifications(NOTIFICATION_ID_2)
+        createNotificationChannel(context, NotificationManagerCompat.IMPORTANCE_DEFAULT, false,
+                "KAUPOOL", "App notification channel")
+
+        val channelId = "kaupool"
+        val title = "KAUPOOL"
+        val content = "새로운 카풀 참여요청이 있습니다."
+
+        val intent = Intent(context, InfoActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(context, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(context, channelId)
+        builder.setSmallIcon(R.drawable.car)
+        builder.setContentTitle(title)
+        builder.setContentText(content)
+        builder.priority = NotificationCompat.PRIORITY_DEFAULT
+        builder.setAutoCancel(true)
+        builder.setContentIntent(pendingIntent)
+
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
+    }
+
+
+    companion object {
+        const val NOTIFICATION_ID = 1001
+        const val NOTIFICATION_ID_2 = 1002
+    }
+
 
     init {
         inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
