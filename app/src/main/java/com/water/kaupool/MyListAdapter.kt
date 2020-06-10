@@ -1,20 +1,26 @@
 package com.water.kaupool
 
+import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 
 import android.graphics.drawable.BitmapDrawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
@@ -31,7 +37,6 @@ import java.util.*
  */
 class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<manager>) : BaseAdapter() {
     var inflater: LayoutInflater
-
     override fun getCount(): Int {
         return data.size
     }

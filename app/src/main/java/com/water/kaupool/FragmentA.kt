@@ -26,16 +26,18 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import com.skt.Tmap.*
+import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapData.ConvertGPSToAddressListenerCallback
 import com.skt.Tmap.TMapData.FindPathDataListenerCallback
+import com.skt.Tmap.TMapGpsManager
 import com.skt.Tmap.TMapGpsManager.onLocationChangedCallback
+import com.skt.Tmap.TMapPoint
+import com.skt.Tmap.TMapView
 import com.water.kaupool.FragmentB.Companion.manage_list
 import com.water.kaupool.LoginActivity.Companion.db_manager
 import com.water.kaupool.LoginActivity.Companion.loginName
 import com.water.kaupool.LoginActivity.Companion.loginPhone
 import java.io.IOException
-import java.lang.Math.pow
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -335,13 +337,9 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
         }
         locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, mLocationListener)
         locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, mLocationListener)
-        location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-
-        mylat = location!!.latitude
-        mylon = location!!.longitude
-
-        Toast.makeText(activity, "현재 위도: " + mylat + "현재 경도: " + mylon, Toast.LENGTH_LONG).show()
+        // location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
     }
+
 
     private fun stopLocationService() {
         if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -429,6 +427,7 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
 
     companion object {
         private const val ApiKey = "l7xxfee14d4fa6ac4197a95728747f7f1da4"
+        var nowAddress: String? = null
         fun initTime(): String {
             val formatter = SimpleDateFormat("yyyyMMdd_HHmmss") // output form
             val now = Date() // date on system

@@ -23,7 +23,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
-
                 <TextView
                     android:id="@+id/Start"
                     android:layout_width="wrap_content"
@@ -31,14 +30,12 @@
                     android:text="항공대학교"
                     android:textSize="15dp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" -> "
                     android:textSize="15dp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/End"
                     android:layout_width="wrap_content"
@@ -51,18 +48,15 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="20.5.10" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" / " />
-
                 <TextView
                     android:id="@+id/time"
                     android:layout_width="wrap_content"
@@ -89,18 +83,15 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-
                 <TextView
                     android:id="@+id/Num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1명" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" / " />
-
                 <TextView
                     android:id="@+id/total_Num"
                     android:layout_width="wrap_content"
@@ -109,4 +100,5 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>
