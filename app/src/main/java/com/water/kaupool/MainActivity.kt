@@ -27,10 +27,6 @@ class MainActivity : AppCompatActivity(),
     var fragment: String? = null
     var manager: LocationManager? = null
 
-    /*fun getViewPager(): ViewPager? {
-        return pager
-    }*/
-
     fun getViewPager(): ViewPager? {
         if (null == pager) {
             pager = findViewById(R.id.pagers) as ViewPager
