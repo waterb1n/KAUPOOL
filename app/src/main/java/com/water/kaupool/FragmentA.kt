@@ -247,8 +247,8 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
 
                 val x = ((cos(lat1) * 6400 * 2 * 3.14 / 360) * abs(lon1 - lon2))
                 val y = (111 * abs(lat1 - lat2))
-                val distance = (sqrt(x * x + y * y) * 1.3).toInt()
-                val time_required = (distance / 0.54).toInt()
+                val distance = (sqrt(x * x + y * y) * 1.45).toInt()
+                val time_required = (distance / 0.47).toInt()
 
                 Thread(Runnable {
                     activity!!.runOnUiThread {
@@ -368,7 +368,7 @@ class FragmentA : Fragment(), onLocationChangedCallback, ConvertGPSToAddressList
 
     // lat, lon to address in KOREA
     open fun searchAddress(mContext: Context?, latitude: Double, longitude: Double): String? {
-        var nowAddress: String? = "Cannot confirm current location."
+        var nowAddress: String? = "GPS ERROR"
         val geocoder = Geocoder(mContext, Locale.KOREA)
         var address: List<Address>? = null
         if (geocoder != null) {

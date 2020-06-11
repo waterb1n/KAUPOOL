@@ -15,8 +15,8 @@ class manager {
 
 
     internal constructor() {}
-    internal constructor(date: String, time: String?, master: String?, phone: String?, user: String?, choice: Boolean,
-                         start: String?, end: String?, num: Int) {
+    internal constructor(date: String, time: String?, master: String?, phone: String?, user: String?,
+                         choice: Boolean, start: String?, end: String?, num: Int) {
         this.date = date
         this.time = time
         this.start = start

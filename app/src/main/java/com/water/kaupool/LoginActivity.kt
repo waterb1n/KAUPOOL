@@ -67,6 +67,5 @@ class LoginActivity : AppCompatActivity() {
         var db_manager: DatabaseReference? = null
         var loginName: String? = null
         var loginPhone: String? = null
-        //var loginId: String? = null
     }
 }

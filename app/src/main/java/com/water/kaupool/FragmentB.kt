@@ -154,8 +154,10 @@ class FragmentB : Fragment() {
             val address = searchAddress(activity, latitude, longitude)
             val beginIdx = address!!.indexOf("시") + 2
             val endIdx = address!!.indexOf("동") + 1
-            val curaddress = address.substring(beginIdx, endIdx)
-            curAddress!!.setText(curaddress)
+            //GPS OFF 에서 작동하지 못함. 예외처리 필요
+            //val curaddress = address.substring(beginIdx, endIdx)
+            //curAddress!!.setText(curaddress)
+            curAddress!!.setText(address)
             stopLocationService() // 미수신시
         }
 
@@ -166,7 +168,7 @@ class FragmentB : Fragment() {
 
     // lat, lon to address in KOREA
     open fun searchAddress(mContext: Context?, latitude: Double, longitude: Double): String? {
-        var nowAddress: String? = "Cannot confirm current location."
+        var nowAddress: String? = "GPS ERROR"
         val geocoder = Geocoder(mContext, Locale.KOREA)
         var address: List<Address>? = null
         if (geocoder != null) {

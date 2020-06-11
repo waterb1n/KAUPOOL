@@ -3,6 +3,7 @@ package com.water.kaupool
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,10 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+        val checkBox1 = findViewById<View>(R.id.checkBox1) as CheckBox
+        val checkBox2 = findViewById<View>(R.id.checkBox2) as CheckBox
+        val checkBox3 = findViewById<View>(R.id.checkBox3) as CheckBox
+        val checkBox4 = findViewById<View>(R.id.checkBox4) as CheckBox
     }
 
     fun checkId(view: View?) { // ID 확인
@@ -52,12 +57,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     fun RegisterToLogin(view: View?) {
+
         val user_id = JoinId!!.text.toString()
         val user_pw = JoinPw!!.text.toString()
         val user_name = JoinName!!.text.toString()
         val user_phone = JoinPhone!!.text.toString()
-        val id_query: Query = LoginActivity.Companion.db_member!!.orderByChild("member_id").equalTo(user_id)
+        val user_age = JoinAge!!.text.toString()
 
+        val id_query: Query = LoginActivity.Companion.db_member!!.orderByChild("member_id").equalTo(user_id)
         id_query.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -66,7 +73,7 @@ class RegisterActivity : AppCompatActivity() {
                     name_query.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.value == null) { //사용가능한 닉네임
-                                val m = member(user_id, user_pw, user_name, user_phone, "w")
+                                val m = member(user_id, user_pw, user_name, user_phone, user_age, "여성", true, true, true, true)
                                 LoginActivity.Companion.db_member!!.child(user_id).setValue(m)
                                 Toast.makeText(applicationContext, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
                                 finish()
