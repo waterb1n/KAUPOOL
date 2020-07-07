@@ -1,6 +1,5 @@
 package com.water.kaupool
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +7,10 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 import com.water.kaupool.LoginActivity.Companion.loginName
 
 class FragmentD : Fragment() {
-    //static DatabaseReference dbTable;
-    //static DatabaseReference db_message;
     private var sendBtn: Button? = null
     private var editText: EditText? = null
     private var listView: ListView? = null
@@ -73,8 +69,6 @@ class FragmentD : Fragment() {
     }
 
     private fun init() {
-        //dbTable = FirebaseDatabase.getInstance().getReference("kaupool");
-        //db_message = dbTable.child("chat_info");
         listView = activity!!.findViewById<View>(R.id.list) as ListView
         sendBtn = activity!!.findViewById<View>(R.id.sendBtn) as Button
         editText = activity!!.findViewById<View>(R.id.editText) as EditText

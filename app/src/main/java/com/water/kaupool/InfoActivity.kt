@@ -36,11 +36,6 @@ class InfoActivity : AppCompatActivity() {
         dbTable = FirebaseDatabase.getInstance().getReference("kaupool")
         db_member = dbTable!!.child("member_info")
         db_manager = dbTable!!.child("manager_info")
-
-        var checkBox1 = findViewById<View>(R.id.checkBox1) as CheckBox?
-        var checkBox2 = findViewById<View>(R.id.checkBox2) as CheckBox?
-        var checkBox3 = findViewById<View>(R.id.checkBox3) as CheckBox?
-        var checkBox4 = findViewById<View>(R.id.checkBox4) as CheckBox?
     }
 
     fun userProfile() {

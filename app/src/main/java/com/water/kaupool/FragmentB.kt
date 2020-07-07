@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemLongClickListener
-import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -22,8 +21,11 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import java.util.*
 import java.io.IOException
+import java.util.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sqrt
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 class FragmentB : Fragment() {
@@ -32,6 +34,10 @@ class FragmentB : Fragment() {
     var locationManager: LocationManager? = null
     var latitude = 0.0
     var longitude = 0.0
+    var lat1 = 0.0
+    var lat2 = 0.0
+    var lon1 = 0.0
+    var lon2 = 0.0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -48,7 +54,6 @@ class FragmentB : Fragment() {
     private fun init() {
         manage_list = ArrayList()
         listView = activity!!.findViewById<View>(R.id.listView) as ListView
-        curAddress = activity!!.findViewById<View>(R.id.curAddress) as TextView
 
         listView!!.onItemClickListener = OnItemClickListener { parent, view, position, id ->
             val Tab = (activity as MainActivity?)!!.fragment
@@ -125,21 +130,20 @@ class FragmentB : Fragment() {
         locationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val minTime: Long = 10 // update time
         val minDistance = 1f // update distance
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(activity, "Don't have permissions.", Toast.LENGTH_LONG).show()
             return
         }
         locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, mLocationListener)
         locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, mLocationListener)
-        // location = locationManager!!.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
     }
 
 
     private fun stopLocationService() {
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(activity, "Don't have permissions.", Toast.LENGTH_LONG).show()
             return
         }
@@ -152,12 +156,6 @@ class FragmentB : Fragment() {
             longitude = location.longitude
             latitude = location.latitude
             val address = searchAddress(activity, latitude, longitude)
-            val beginIdx = address!!.indexOf("시") + 2
-            val endIdx = address!!.indexOf("동") + 1
-            //GPS OFF 에서 작동하지 못함. 예외처리 필요
-            //val curaddress = address.substring(beginIdx, endIdx)
-            //curAddress!!.setText(curaddress)
-            curAddress!!.setText(address)
             stopLocationService() // 미수신시
         }
 
@@ -184,6 +182,36 @@ class FragmentB : Fragment() {
         }
         return nowAddress
     }
+
+    fun searchAddress(addr1: String?, addr2: String?) {
+        val gc = Geocoder(activity, Locale.KOREA)
+        try {
+            val addrList1: List<Address>? = gc.getFromLocationName(addr1, 5)
+            val addrList2: List<Address>? = gc.getFromLocationName(addr2, 5)
+            if (addrList1 != null && addrList2 != null) {
+                lat1 = addrList1[0].latitude
+                lon1 = addrList1[0].longitude
+                lat2 = addrList2[0].latitude
+                lon2 = addrList2[0].longitude
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun distanceBetween(): Double {
+        var nowloc = curAddress?.text.toString()
+
+        val man = manage_list!![0]!!
+        searchAddress(man.start, nowloc)
+
+        val x = ((cos(lat1) * 6400 * 2 * 3.14 / 360) * abs(lon1 - lon2))
+        val y = (111 * abs(lat1 - lat2))
+        //val distance = (sqrt(x * x + y * y) * 1.3)
+
+        return (sqrt(x * x + y * y) * 1.3)
+    }
+
 
     interface OnFragmentInteractionListener {}
 

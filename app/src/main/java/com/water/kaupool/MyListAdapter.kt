@@ -127,7 +127,6 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
                 }
 
             } else {
-                //Btn.setImageResource(R.drawable.button_in);
                 val newMan: manager? = manage_list?.get(position)
                 val people = newMan?.user
                 val p_list = people!!.split(",").toTypedArray()
@@ -177,8 +176,6 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
     }
 
     fun showNoti() {
-        //clearExistingNotifications(NOTIFICATION_ID)
-        //clearExistingNotifications(NOTIFICATION_ID_2)
         createNotificationChannel(context, NotificationManagerCompat.IMPORTANCE_DEFAULT, false,
                 "KAUPOOL", "App notification channel")
 
@@ -188,27 +185,24 @@ class MyListAdapter(val context: Context, var layout: Int, var data: ArrayList<m
 
         val intent = Intent(context, InfoActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val pendingIntent = PendingIntent.getActivity(context, 0,
+        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(context, channelId)
         builder.setSmallIcon(R.drawable.car)
         builder.setContentTitle(title)
         builder.setContentText(content)
-        builder.priority = NotificationCompat.PRIORITY_DEFAULT
+        builder.priority = NotificationCompat.PRIORITY_HIGH
         builder.setAutoCancel(true)
-        builder.setContentIntent(pendingIntent)
+        builder.setFullScreenIntent(fullScreenPendingIntent, true)
 
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
 
-
     companion object {
         const val NOTIFICATION_ID = 1001
-        const val NOTIFICATION_ID_2 = 1002
     }
-
 
     init {
         inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

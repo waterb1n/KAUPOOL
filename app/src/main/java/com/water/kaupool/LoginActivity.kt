@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
         dbTable = FirebaseDatabase.getInstance().getReference("kaupool")
         db_member = dbTable!!.child("member_info")
         db_manager = dbTable!!.child("manager_info")
+        db_message = dbTable!!.child("message_info")
     }
 
     fun goto_Register(view: View?) {
@@ -36,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
         val query = db_member!!.orderByKey().equalTo(user_id)
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            //핸들러로 쿼리 내용 확인
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (data in dataSnapshot.children) {
                     val m = data!!.getValue(member::class.java)
@@ -45,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
                         val loginIntent = Intent(this@LoginActivity, MainActivity::class.java)
                         loginName = m?.member_name
                         loginPhone = m?.member_phone
-                        //loginId = m?.member_id
                         Toast.makeText(this@LoginActivity, "환영합니다.", Toast.LENGTH_SHORT).show()
                         startActivity(loginIntent)
 
@@ -65,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
         var dbTable: DatabaseReference? = null
         var db_member: DatabaseReference? = null
         var db_manager: DatabaseReference? = null
+        var db_message: DatabaseReference? = null
         var loginName: String? = null
         var loginPhone: String? = null
     }
